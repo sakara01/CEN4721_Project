@@ -1,0 +1,112 @@
+
+
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+
+
+#logo {
+    max-width: 100%; 
+    max-height: 80%;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    margin: 5px;
+}
+.grid-container {
+    display: grid;
+    height: 20vh;
+    
+}
+.grid-bottom-left, .grid-bottom-right {
+    padding: 20px; 
+}
+
+  
+  .navbar-content {
+    display: none;
+    position: absolute;
+    background-color: #333;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    text-align: right;
+  }
+  
+  .navbar:hover .navbar-content {
+    display: block;
+  }
+  
+  .navbar-content a {
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .navbar-content a:hover {
+    background-color: #ddd;
+    color: black;
+  }
+  
+ 
+ 
+  .toggleNavbar:hover {
+    background-color: #ddd;
+    color: black;
+  }
+  
+.nav-link:hover {
+    color: hotpink;
+  }
+  
+ 
+  .nav-link:focus {
+    color: blue;
+    outline: none; 
+  }
+  .grid-top {
+    grid-column: 1 / 3;
+    grid-row: 1 / 2;
+    display: flex;
+    justify-content: space-between; /* 水平间距设置为两边对齐 */
+    align-items: center; /* 垂直居中对齐 */
+    background-color: #360b56;
+    border-bottom: 3px solid rgb(203, 166, 206);
+  }
+  
+  .title-navbar {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* 垂直顶对齐 */
+  }
+  
+  .title {
+    font-size: 3em;
+    font-weight: bold;
+    color: #d799a0;
+    margin: 0; /* 去除默认的外边距 */
+  }
+  
+  .navbar {
+    display: inline-block;
+    position: relative;
+    font-style: normal;
+    text-align: right; /* 导航栏内容右对齐 */
+  }
+  
+  #toggleNavbar {
+    font-size: 2em;
+    padding: 12px 32px;
+    margin: 0;
+    align-self: flex-end; /* 将按钮移动到右侧 */
+  }
+  

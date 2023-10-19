@@ -5,13 +5,43 @@
     <head>
         <meta charset="UTF-8">
         <title>CEN4721_Project</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body>
-        <div>Harmony Stream</div>
-        <!--add website content here-->
+        
+        <div class="grid-container">
+            <div class="grid-top">
+                <div class="title-navbar">
+                  <div class="title">Harmony Stream</div>
+                </div>
+                  <div class="navbar">
+                    <button id="toggleNavbar">View My playlist</button>
+                    <div class="navbar-content" id="navbar">
+                        <a class="nav-link" href="#">Link 1</a>
+                        <a class="nav-link" href="#">Link 2</a>
+                        <a class="nav-link" href="#">Link 3</a>
+                    </div>
+                  </div>
+                
+              </div>
+        <div class="grid-bottom-left">
+           <h1></h1>
+        </div>
+        <div class="grid-bottom-right">
+            <h1></h1>
+        </div>
+    </div>
     </body>
     <script>
         //add javascript here
+        document.getElementById("toggleNavbar").addEventListener("click", function() {
+  var navbar = document.getElementById("navbar");
+  if (navbar.style.display === "block") {
+    navbar.style.display = "none";
+  } else {
+    navbar.style.display = "block";
+  }
+});
     </script>
 </html>
 
