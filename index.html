@@ -12,7 +12,7 @@
     </head>
     <body>
         
-        <div class="grid-container">
+        <div id="grid-container" class="grid-container">
             <div class="grid-top">
                 <div class="title-navbar">
                   <div class="title">Harmony Stream</div>
@@ -66,12 +66,16 @@
                   <button class="btn btn-outline-secondary" type="button" id="clearSearch">X</button>
                 </div>
               </div>
-              <div id="playlist-container">
-                <div class="notfound-container-container">      
-                  <div class="notfound-container">
-                    <img src="noresults.png" class="notfound-img">
-                  </div>
-                </div>  
+              <div class="container-container">      
+                <div id="notfound" class="found-or-not-container">
+                  <img src="no-results.png" class="found-or-not-img">
+                </div>
+                <div id="search" class="found-or-not-container">
+                  <img src="search.png" class="found-or-not-img">
+                </div>
+              </div>
+
+              <div id="playlist-container">   
               </div>
             </div>
             </div>
@@ -81,6 +85,10 @@
     <script>
 
         document.getElementById("searchInput").value = "";  //clear search bar on load
+        
+        document.getElementById("main-screen").style.height = window.innerHeight - 90 + 'px';
+        document.getElementById("playlist-container").style.height = (window.innerHeight - 280) + 'px';
+
 
         document.getElementById("toggleNavbar").addEventListener("click", function() {
         var navbar = document.getElementById("navbar");
@@ -140,6 +148,8 @@
                       } else {
                         console.log('No artist found with the given search term.');
                         document.getElementById("playlist-container").innerHTML = ``;
+                        document.getElementById("search").style.visibility = 'hidden';
+                        document.getElementById("notfound").style.visibility = 'visible';
                         
                       }
                                 
@@ -212,7 +222,7 @@
 
 <!--credits:
 music icon : https://www.vecteezy.com/png/1200758-music-note
-
+no results icon: https://www.flaticon.com/free-icon/no-results_6179016
 
 -->
 
