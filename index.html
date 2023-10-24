@@ -6,6 +6,9 @@
         <meta charset="UTF-8">
         <title>CEN4721_Project</title>
         <link rel="stylesheet" type="text/css" href="style.css">
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     </head>
     <body>
         
@@ -24,30 +27,194 @@
                   </div>
                 
               </div>
-        <div class="grid-bottom-left">
-           <h1></h1>
-        </div>
-        <div class="grid-bottom-right">
+          <!--
+          <div class="grid-bottom-left">
             <h1></h1>
+          </div>
+          <div class="grid-bottom-right">
+              <h1></h1>
+          </div>
+          -->
         </div>
-    </div>
+
+        <div id="main-screen">
+          <div id="sidebar"> 
+            <div id="sidebar-header">
+              Sort By
+            </div>
+            <div id="tag-option-list">
+                  <button class="btn oval-button" style="background-color: #edbf36">#happy</button>
+                  <br>
+                  <button class="btn oval-button" style="background-color: #3698ed">#sad</button>
+                  <br>
+                  <button class="btn oval-button" style="background-color: #c4614b">#angry</button>
+                  <br>
+                  <button class="btn oval-button" style="background-color: #65b850">#idk</button>
+                  <br>
+                  <button class="btn oval-button" style="background-color: #e464a9">#idk</button>
+                  <br>
+                  <button class="btn oval-button" style="background-color: #4bc4aa">#idk</button>
+
+            </div>
+          </div>
+          <div id="main">
+            <div id="main-header">
+              Search
+              <div class="input-group mb-3 searchbar">
+                <input type="text" class="form-control" id="searchInput" placeholder="Artist's Name" aria-label="Search term" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary" type="button" id="clearSearch">X</button>
+                </div>
+              </div>
+              <div id="playlist-container">
+                <div class="notfound-container-container">      
+                  <div class="notfound-container">
+                    <img src="noresults.png" class="notfound-img">
+                  </div>
+                </div>  
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
     </body>
     <script>
-        //add javascript here
+
+        document.getElementById("searchInput").value = "";  //clear search bar on load
+
         document.getElementById("toggleNavbar").addEventListener("click", function() {
-  var navbar = document.getElementById("navbar");
-  if (navbar.style.display === "block") {
-    navbar.style.display = "none";
-  } else {
-    navbar.style.display = "block";
-  }
-});
+        var navbar = document.getElementById("navbar");
+        if (navbar.style.display === "block") {
+          navbar.style.display = "none";
+        } else {
+          navbar.style.display = "block";
+        }
+        }); 
+
+        document.getElementById("clearSearch").addEventListener("click", function() {
+          document.getElementById("searchInput").value = ""; // Clear the input field
+        });
+
+        document.getElementById("searchInput").addEventListener("keyup", function(event) {
+          if (event.key === "Enter") {
+              // Get the value from the search input
+              const searchTerm = this.value;
+              console.log("Search term:", searchTerm);
+              const searchUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(searchTerm)}&type=artist`;
+
+              // Set up the request to search for the artist
+              const artistSearchRequestParams = {
+                  method: 'GET',
+                  headers: {
+                      'Authorization': `Bearer ${accessToken}`
+                  }
+                };
+                // Make the request to search for the artist
+              fetch(searchUrl, artistSearchRequestParams)
+                  .then(response => response.json())
+                  .then(data => {
+                      // Handle the search results here
+                      console.log('Artist Search Results:', data);
+                      if (data.artists && data.artists.items.length > 0) {
+                          const artistId = data.artists.items[0].id; // Assuming you want the top artist
+
+                          // Request the top tracks of the artist
+                          const topTracksUrl = `https://api.spotify.com/v1/artists/${artistId}/top-tracks?country=US`; // Change the country code as needed
+
+                          const topTracksRequestParams = {
+                            method: 'GET',
+                            headers: {
+                              'Authorization': `Bearer ${accessToken}`
+                            }
+                          };
+
+                          // Make the request to get the top tracks
+                          fetch(topTracksUrl, topTracksRequestParams)
+                            .then(response => response.json())
+                            .then(topTracksData => {
+                              // Handle the top tracks results here
+                              console.log('Top Tracks:', topTracksData.tracks);
+                              displaySongs(topTracksData.tracks);
+                            })
+                            .catch(error => console.error('Error fetching top tracks:', error));
+                      } else {
+                        console.log('No artist found with the given search term.');
+                        document.getElementById("playlist-container").innerHTML = ``;
+                        
+                      }
+                                
+                  })
+                  .catch(error => console.error('Error:', error));
+                }
+        });
+
+        function displaySongs(songData){
+          document.getElementById("playlist-container").innerHTML = ``;
+          for(i in songData){
+            var song = songData[i];
+            document.getElementById("playlist-container").innerHTML += `<div class="list-group" style="max-height: 600px; overflow-y: auto;">
+                            <div class="list-group-item list-group-item-action playlist-entry">
+                                <div class="cover-container">
+                                <img src="musicnote.png" class="cover-img" alt="add to playlist button">
+                                </div>
+                                <div class="playlist-entry-text1">
+                                  <p class="mb-1 song">${song.name}</p>
+                                  <p class="mb-1 artist">${song.artists[0].name}</p>
+                                </div>
+                                <div class="playlist-entry-text2">
+                                  <p class="mb-1 album">${song.album.name}</p>
+                                </div>
+                                <div class="img-container">
+                                    <img src="plus.png" class="add-btn" alt="add to playlist button">
+                                </div>
+                        </div>`;
+          }
+         
+          
+        }
+
+        
+
+
+        const CLIENT_ID = 'fb2c7009a8f4407ca01b0da46c45750a';
+        const CLIENT_SECRET = 'af63502a913d49a3ab20b95681a42fdf';
+        var accessToken;
+
+        // Encode your client ID and client secret
+        const credentials = btoa(`${CLIENT_ID}:${CLIENT_SECRET}`);
+
+        // Define the token request URL
+        const tokenUrl = 'https://accounts.spotify.com/api/token';
+
+        // Set up the token request parameters
+        const tokenRequestParams = {
+            method: 'POST',
+            headers: {
+                'Authorization': `Basic ${credentials}`,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'grant_type=client_credentials'
+        };
+
+        // Make the request to obtain the access token
+        fetch(tokenUrl, tokenRequestParams)
+            .then(response => response.json())
+            .then(data => {
+                accessToken = data.access_token;
+                // You can now use this access token to make requests to the Spotify API
+                console.log('Access Token:', accessToken);
+            })
+            .catch(error => console.error('Error:', error));
     </script>
 </html>
 
 
 
+<!--credits:
+music icon : https://www.vecteezy.com/png/1200758-music-note
 
+
+-->
 
 
 
