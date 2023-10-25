@@ -199,6 +199,12 @@ li {
     width: 100%;
   } 
 
+  .search-btn{
+    left: 160px;
+    bottom: 40px;
+    position: absolute;
+  }
+
   .song{
     font-size: 18px;
   }

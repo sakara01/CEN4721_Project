@@ -43,18 +43,29 @@
               Sort By
             </div>
             <div id="tag-option-list">
-                  <button class="btn oval-button" style="background-color: #edbf36">#happy</button>
+                  <button id="Joyful" class="btn oval-button" style="background-color: #edbf36" onclick="tagClicked(id)">#Joyful</button>
                   <br>
-                  <button class="btn oval-button" style="background-color: #3698ed">#sad</button>
+                  <button id="Energetic" class="btn oval-button" style="background-color: #3698ed" onclick="tagClicked(id)">#Energetic</button>
                   <br>
-                  <button class="btn oval-button" style="background-color: #c4614b">#angry</button>
+                  <button id="Melancholic" class="btn oval-button" style="background-color: #c4614b" onclick="tagClicked(id)">#Melancholic</button>
                   <br>
-                  <button class="btn oval-button" style="background-color: #65b850">#idk</button>
+                  <button id="Angry" class="btn oval-button" style="background-color: #65b850" onclick="tagClicked(id)">#Angry</button>
                   <br>
-                  <button class="btn oval-button" style="background-color: #e464a9">#idk</button>
+                  <button id="Romantic" class="btn oval-button" style="background-color: #e464a9" onclick="tagClicked(id)">#Romantic</button>
                   <br>
-                  <button class="btn oval-button" style="background-color: #4bc4aa">#idk</button>
-
+                  <button id="Relaxing" class="btn oval-button" style="background-color: #4bc4aa" onclick="tagClicked(id)">#Relaxing</button>
+                  <br>
+                  <button id="Euphoric" class="btn oval-button" style="background-color: #3698ed" onclick="tagClicked(id)">#Euphoric</button>
+                  <br>
+                  <button id="Mysterious" class="btn oval-button" style="background-color: #c4614b" onclick="tagClicked(id)">#Mysterious</button>
+                  <br>
+                  <button id="Playful" class="btn oval-button" style="background-color: #65b850" onclick="tagClicked(id)">#Playful</button>
+                  <br>
+                  <button id="Empowering" class="btn oval-button" style="background-color: #65b850" onclick="tagClicked(id)">#Empowering</button>
+                  
+            </div>
+            <div>
+              <button class="btn btn-secondary btn-lg search-btn" onclick="searchClicked()">Search</button>
             </div>
           </div>
           <div id="main">
@@ -84,6 +95,11 @@
     </body>
     <script>
 
+        var genres ='';
+        var artist;
+        var artistName;
+        var artistId;
+
         document.getElementById("searchInput").value = "";  //clear search bar on load
         
         document.getElementById("main-screen").style.height = window.innerHeight - 90 + 'px';
@@ -103,12 +119,50 @@
           document.getElementById("searchInput").value = ""; // Clear the input field
         });
 
+        
+        const CLIENT_ID = 'fb2c7009a8f4407ca01b0da46c45750a';
+        const CLIENT_SECRET = 'af63502a913d49a3ab20b95681a42fdf';
+        var accessToken;
+
+        // Encode your client ID and client secret
+        const credentials = btoa(`${CLIENT_ID}:${CLIENT_SECRET}`);
+
+        // Define the token request URL
+        const tokenUrl = 'https://accounts.spotify.com/api/token';
+
+        // Set up the token request parameters
+        const tokenRequestParams = {
+            method: 'POST',
+            headers: {
+                'Authorization': `Basic ${credentials}`,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'grant_type=client_credentials'
+        };
+
+        // Make the request to obtain the access token
+        fetch(tokenUrl, tokenRequestParams)
+            .then(response => response.json())
+            .then(data => {
+                accessToken = data.access_token;
+                // You can now use this access token to make requests to the Spotify API
+                console.log('Access Token:', accessToken);
+            })
+            .catch(error => console.error('Error:', error));
+
+
+
+        const lastfmKEY= '4eb3fe2b8c857843a5f02285f350c541';
+        const lastfmSECRET= 'cf4c824d370be3ad4674798b74d335f8';
+
+        
+
         document.getElementById("searchInput").addEventListener("keyup", function(event) {
           if (event.key === "Enter") {
               // Get the value from the search input
-              const searchTerm = this.value;
-              console.log("Search term:", searchTerm);
-              const searchUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(searchTerm)}&type=artist`;
+              artist = this.value;
+              console.log("Search term:", artist);
+              const searchUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(artist)}&type=artist`;
 
               // Set up the request to search for the artist
               const artistSearchRequestParams = {
@@ -124,10 +178,11 @@
                       // Handle the search results here
                       console.log('Artist Search Results:', data);
                       if (data.artists && data.artists.items.length > 0) {
-                          const artistId = data.artists.items[0].id; // Assuming you want the top artist
+                          artistName = data.artists.items[0].name;
+                          artistId = data.artists.items[0].id; // Assuming you want the top artist
 
                           // Request the top tracks of the artist
-                          const topTracksUrl = `https://api.spotify.com/v1/artists/${artistId}/top-tracks?country=US`; // Change the country code as needed
+                          const topTracksUrl = `https://api.spotify.com/v1/artists/${artistId}/top-tracks?country=US&offset=7`; // Change the country code as needed
 
                           const topTracksRequestParams = {
                             method: 'GET',
@@ -162,7 +217,12 @@
           document.getElementById("playlist-container").innerHTML = ``;
           for(i in songData){
             var song = songData[i];
-            document.getElementById("playlist-container").innerHTML += `<div class="list-group" style="max-height: 600px; overflow-y: auto;">
+            addSong(song);
+          }
+        }
+
+        function addSong(song){
+          document.getElementById("playlist-container").innerHTML += `<div class="list-group" style="max-height: 600px; overflow-y: auto;">
                             <div class="list-group-item list-group-item-action playlist-entry">
                                 <div class="cover-container">
                                 <img src="musicnote.png" class="cover-img" alt="add to playlist button">
@@ -178,43 +238,113 @@
                                     <img src="plus.png" class="add-btn" alt="add to playlist button">
                                 </div>
                         </div>`;
-          }
+        }
          
-          
+
+        function tagClicked(id){
+          console.log(id);
+          document.getElementById(id).style.border = '4px solid black';
+          switch(id){
+            case "Joyful":
+              console.log("switchcase");
+              genres += "Pop, Ska, Reggae, Funk, Disco, electro pop";
+              break;
+            case "Energetic":
+              genres += "Rock, Electronic (EDM, Techno), Punk, Hip-Hop, Reggaeton, dance, electro pop, electropop";
+              break;
+            case "Melancholic":
+              genres += "Blues, Classical (Adagios), Country (Country Ballads), Folk (Sad Folk), Jazz (Bluesy Jazz), indie";
+              break;
+            case "Angry":
+              genres += "Metal (Thrash, Death, Black), Hardcore Punk, Grunge, Rap (Gangsta Rap), Industrial";
+              break;
+            case "Romantic":
+              genres +=  "RnB,R&B Soul, Ballads, Reggae (Love Songs), Country (Country Love), indie";
+              break;
+            case "Relaxing":
+              genres += "Ambient, Downtempo, Jazz (Smooth Jazz), Electronic (Chillout, Chillwave), New Age, dream pop, indie";
+              break;
+            case "Euphoric":
+              genres +=  "Trance, Psychedelic, House, Psytrance, EDM, electro pop";
+              break;
+            case "Mysterious":
+              genres += "Trip-Hop, Experimental, Darkwave, Industrial, Post-Rock";
+              break;
+            case "Playful":
+              genres +=  "Folk (Folk Revival), Children's Music, Novelty, J-Pop/K-Pop, Ska";
+              break;
+            case "Empowering":
+              genres += "Hip-Hop (Empowerment anthems), Rock (Classic Rock, Hard Rock), Pop (Upbeat Pop), Reggae (Roots Reggae), Funk (Funky grooves), indie";
+              break;
+          }
         }
 
-        
+        function searchClicked(){
+          if (artist== undefined){
+            alert("Please select artist");
+            //possibly searach by genre without artist
+          }
+          else{
+            document.getElementById("playlist-container").innerHTML=``;
+
+            //make request to get songs
+            const topTracksUrl = `https://api.spotify.com/v1/artists/${artistId}/top-tracks?country=US&limit=20`; // Change the country code as needed
+            const topTracksRequestParams = {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${accessToken}`
+              }
+            };
+            fetch(topTracksUrl, topTracksRequestParams)
+              .then(response => response.json())
+              .then(topTracksData => {
+                // Handle the top tracks results here
+                console.log('Top Tracks:', topTracksData.tracks);
+                //check tags of each song, if matches the genres, add to display on screen
+                for(i in topTracksData.tracks){
+                  checktags(topTracksData.tracks[i]);
+                }
+              })
+              .catch(error => console.error('Error fetching top tracks:', error));
+
+            
+          }
+        }
+
+        function checktags(song){
+            //if tag matches genres, do addSong
+            const genreURL = `http://ws.audioscrobbler.com/2.0/?method=track.gettoptags&artist=${artistName}&track=${song.name}&api_key=${lastfmKEY}&format=json`;
+            const genreSearchRequestParams = {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                  };
+              // Make the request to search for the artist
+            fetch(genreURL, genreSearchRequestParams)
+                .then(response => response.json())
+                .then(data => {
+                  //console.log(data);
+                  console.log(song.name);    //delete
+                  genresLower=genres.toLowerCase();
+                  if(data.toptags){
+                    if (data.toptags.tag[0] !=null) {
+                      tag0Lower=data.toptags.tag[0].name.toLowerCase();
+                    }
+                    if (data.toptags.tag[1] !=null){
+                      tag1Lower=data.toptags.tag[1].name.toLowerCase()
+                      console.log(`tags:${tag0Lower},${tag1Lower}`) //delete
+
+                      if (genresLower.includes(tag0Lower) || genresLower.includes(tag1Lower)){
+                        addSong(song);
+                      }
+                    }
+                  }
+                  
+                });
+        }
 
 
-        const CLIENT_ID = 'fb2c7009a8f4407ca01b0da46c45750a';
-        const CLIENT_SECRET = 'af63502a913d49a3ab20b95681a42fdf';
-        var accessToken;
-
-        // Encode your client ID and client secret
-        const credentials = btoa(`${CLIENT_ID}:${CLIENT_SECRET}`);
-
-        // Define the token request URL
-        const tokenUrl = 'https://accounts.spotify.com/api/token';
-
-        // Set up the token request parameters
-        const tokenRequestParams = {
-            method: 'POST',
-            headers: {
-                'Authorization': `Basic ${credentials}`,
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: 'grant_type=client_credentials'
-        };
-
-        // Make the request to obtain the access token
-        fetch(tokenUrl, tokenRequestParams)
-            .then(response => response.json())
-            .then(data => {
-                accessToken = data.access_token;
-                // You can now use this access token to make requests to the Spotify API
-                console.log('Access Token:', accessToken);
-            })
-            .catch(error => console.error('Error:', error));
     </script>
 </html>
 
