@@ -119,6 +119,7 @@ li {
     height:100%;
     width:20%;
     border: 3px solid black;
+    overflow: scroll;
   }
 
   #main{
@@ -228,7 +229,7 @@ li {
   }
 
   .found-or-not-container{
-    height:400px;
+    height:max-content;
     width:240px;
     position: absolute;
     margin-top: 60px;
@@ -242,3 +243,8 @@ li {
     visibility: hidden;
   }
 
+  #spinner{
+    animation-duration: 1.2s !important;
+    margin-left:10px;
+    visibility: hidden;
+  }

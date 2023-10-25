@@ -76,6 +76,9 @@
                 <div class="input-group-append">
                   <button class="btn btn-outline-secondary" type="button" id="clearSearch">X</button>
                 </div>
+                <div class="spinner-border" id="spinner" role="status">
+                  <span class="visually-hidden"></span>
+                </div>
               </div>
               <div class="container-container">      
                 <div id="notfound" class="found-or-not-container">
@@ -185,31 +188,24 @@
                           // Request the top tracks of the artist
                           const topTracksUrl = `http://ws.audioscrobbler.com/2.0/?method=artist.gettoptracks&artist=${artistName}&api_key=${lastfmKEY}&format=json`; 
 
-                          const topTracksRequestParams = {
-                            method: 'GET',
-                            headers: {
-                              'Authorization': `Bearer ${accessToken}`
-                            }
-                          };
-
                           // Make the request to get the top tracks
-                          fetch(topTracksUrl, topTracksRequestParams)
+                          fetch(topTracksUrl)
                             .then(response => response.json())
                             .then(data => {
                               // Handle the top tracks results here
-                              topTracksData= data.toptracks;
-                              console.log('toptracksdata:', topTracksData);
-                              displaySongs(data.toptracks);
+                              topTracksData = data.toptracks.track;
+                              displaySongs(topTracksData);
                             })
                             .catch(error => console.error('Error fetching top tracks:', error));
+
+                            document.getElementById("search").style.visibility = 'hidden';
+
                       } else {
                         console.log('No artist found with the given search term.');
                         document.getElementById("playlist-container").innerHTML = ``;
                         document.getElementById("search").style.visibility = 'hidden';
                         document.getElementById("notfound").style.visibility = 'visible';
-                        
                       }
-                                
                   })
                   .catch(error => console.error('Error:', error));
                 }
@@ -217,11 +213,10 @@
 
         function displaySongs(songData){
           document.getElementById("playlist-container").innerHTML = ``;
-          var albumName;
 
-          if(songData.track.length >0){
-            for(i in songData.track){
-              var song = songData.track[i];
+          if(songData.length >0){
+            for(i in songData){
+              var song = songData[i];
 
               const topTracksUrl = `https://api.spotify.com/v1/search?q=track:"${song.name}" artist:"${artistName}"&type=track`; 
               const topTracksRequestParams = {
@@ -231,12 +226,14 @@
                 }
               };
 
-              // Make the request to get the top tracks
+              // Make the request to get the track
               fetch(topTracksUrl, topTracksRequestParams)
                 .then(response => response.json())
                 .then(data => {
-                  // Handle the top tracks results here
-                  addSong(data.tracks.items[0]);
+                  if(data.tracks.items[0]){
+                    addSong(data.tracks.items[0]);
+                  }
+                  
                 })
                 .catch(error => console.error('Error fetching top tracks:', error));
             }
@@ -244,7 +241,7 @@
 
         }
 
-        function addSong(song, album){
+        function addSong(song){
           document.getElementById("playlist-container").innerHTML += `<div class="list-group" style="max-height: 600px; overflow-y: auto;">
                             <div class="list-group-item list-group-item-action playlist-entry">
                                 <div class="cover-container">
@@ -270,13 +267,13 @@
           switch(id){
             case "Joyful":
               console.log("switchcase");
-              genres += "Pop, Ska, Reggae, Funk, Disco, electro pop";
+              genres += "Pop, Ska, Reggae, Funk, Disco, electro pop, pop rock";
               break;
             case "Energetic":
-              genres += "Rock, Electronic (EDM, Techno), Punk, Hip-Hop, Reggaeton, dance, electro pop, electropop, rap, afrobeat";
+              genres += "Rock, Electronic (EDM, Techno), Punk, Hip-Hop, Reggaeton, dance, electro pop, electropop, rap, afrobeat, pop rock";
               break;
             case "Melancholic":
-              genres += "Blues, Classical (Adagios), Country (Country Ballads), Folk (Sad Folk), Jazz (Bluesy Jazz), indie, rnb";
+              genres += "Blues, Classical (Adagios), Country (Country Ballads), Folk (Sad Folk), Jazz (Bluesy Jazz), indie, rnb, alternative";
               break;
             case "Angry":
               genres += "Metal (Thrash, Death, Black), Hardcore Punk, Grunge, Rap (Gangsta Rap), Industrial, hip hop, brat, trap";
@@ -285,70 +282,53 @@
               genres +=  "RnB,R&B Soul, Ballads, Reggae (Love Songs), Country (Country Love), indie";
               break;
             case "Relaxing":
-              genres += "Ambient, Downtempo, Jazz (Smooth Jazz), Electronic (Chillout, Chillwave), New Age, dream pop, indie";
+              genres += "Ambient, Downtempo, Jazz (Smooth Jazz), Electronic (Chillout, Chillwave), New Age, dream, indie, alternative";
               break;
             case "Euphoric":
               genres +=  "Trance, Psychedelic, House, Psytrance, EDM, electro pop";
               break;
             case "Mysterious":
-              genres += "Trip-Hop, Experimental, Darkwave, Industrial, Post-Rock";
+              genres += "Trip-Hop, Experimental, Darkwave, Industrial, Post-Rock, dark pop, alternative";
               break;
             case "Playful":
               genres +=  "Folk (Folk Revival), Children's Music, Novelty, J-Pop/K-Pop, Ska";
               break;
             case "Empowering":
-              genres += "Hip-Hop (Empowerment), Rock (Classic Rock, Hard Rock), Pop (Upbeat), Reggae (Roots Reggae), Funk (Funky grooves), indie, trap, brat, hip hop, rap, afrobeat";
+              genres += "Hip-Hop (Empowerment), Rock (Classic Rock, Hard Rock), Pop (Upbeat), Reggae (Roots Reggae), Funk (Funky grooves), indie, trap, brat, hip hop, rap, afrobeat, pop rock";
               break;
           }
         }
 
-        function searchClicked(){
+        var indexesToRemove=[];
+
+        async function searchClicked(){
           if (artist== undefined){
             alert("Please select artist");
             //possibly searach by genre without artist
           }
           else{
             document.getElementById("playlist-container").innerHTML=``;
-
-            //make request to get songs
-            const topTracksUrl = `http://ws.audioscrobbler.com/2.0/?method=artist.gettoptracks&artist=${artistName}&api_key=${lastfmKEY}&format=json`; // Change the country code as needed
-            const topTracksRequestParams = {
-              method: 'GET',
-              headers: {
-                'Authorization': `Bearer ${accessToken}`
-              }
-            };
-            fetch(topTracksUrl, topTracksRequestParams)
-              .then(response => response.json())
-              .then(topTracksData => {
-                // Handle the top tracks results here
-                console.log('Top Tracks:', topTracksData.tracks);
-                //check tags of each song, if matches the genres, add to display on screen
-                for(i in topTracksData.tracks){
-                  checktags(topTracksData.tracks[i]);
-                }
-              })
-              .catch(error => console.error('Error fetching top tracks:', error));
-
-            
+            console.log(`genres are: ${genres}`);
+          
+            for(i in topTracksData){
+              document.getElementById("spinner").style.visibility = 'visible';
+              await checktags(topTracksData[i],i);
+            }
+            document.getElementById("spinner").style.visibility = 'hidden';
+            if (document.getElementById("playlist-container").innerHTML == ``){
+              document.getElementById("notfound").style.visibility = 'visible';
+            }
           }
         }
 
-        function checktags(song){
+        async function checktags(song,i){
             //if tag matches genres, do addSong
             const genreURL = `http://ws.audioscrobbler.com/2.0/?method=track.gettoptags&artist=${artistName}&track=${song.name}&api_key=${lastfmKEY}&format=json`;
-            const genreSearchRequestParams = {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
-                    }
-                  };
+
               // Make the request to search for the artist
-            fetch(genreURL, genreSearchRequestParams)
+            await fetch(genreURL)
                 .then(response => response.json())
                 .then(data => {
-                  //console.log(data);
-                  console.log(song.name);    //delete
                   genresLower=genres.toLowerCase();
                   if(data.toptags){
                     if (data.toptags.tag[0] !=null) {
@@ -356,11 +336,31 @@
                     }
                     if (data.toptags.tag[1] !=null){
                       tag1Lower=data.toptags.tag[1].name.toLowerCase()
+                      console.log(song.name)
                       console.log(`tags:${tag0Lower},${tag1Lower}`) //delete
 
                       if (genresLower.includes(tag0Lower) || genresLower.includes(tag1Lower)){
-                        addSong(song);
+                        const topTracksUrl = `https://api.spotify.com/v1/search?q=track:"${song.name}" artist:"${artistName}"&type=track`; 
+                        const topTracksRequestParams = {
+                          method: 'GET',
+                          headers: {
+                            'Authorization': `Bearer ${accessToken}`
+                          }
+                        };
+
+                        // Make the request to get the track
+                        fetch(topTracksUrl, topTracksRequestParams)
+                          .then(response => response.json())
+                          .then(data => {
+                            if(data.tracks.items[0]){
+                              addSong(data.tracks.items[0]);
+                            }
+                            
+                          })
+                          .catch(error => console.error('Error fetching top tracks:', error));
+                      
                       }
+                      
                     }
                   }
                   
