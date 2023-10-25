@@ -99,6 +99,7 @@
         var artist;
         var artistName;
         var artistId;
+        var topTracksData;
 
         document.getElementById("searchInput").value = "";  //clear search bar on load
         
@@ -179,10 +180,10 @@
                       console.log('Artist Search Results:', data);
                       if (data.artists && data.artists.items.length > 0) {
                           artistName = data.artists.items[0].name;
-                          artistId = data.artists.items[0].id; // Assuming you want the top artist
+                          artistId = data.artists.items[0].id; // SPOTIFY artist ID
 
                           // Request the top tracks of the artist
-                          const topTracksUrl = `https://api.spotify.com/v1/artists/${artistId}/top-tracks?country=US&offset=7`; // Change the country code as needed
+                          const topTracksUrl = `http://ws.audioscrobbler.com/2.0/?method=artist.gettoptracks&artist=${artistName}&api_key=${lastfmKEY}&format=json`; 
 
                           const topTracksRequestParams = {
                             method: 'GET',
@@ -194,10 +195,11 @@
                           // Make the request to get the top tracks
                           fetch(topTracksUrl, topTracksRequestParams)
                             .then(response => response.json())
-                            .then(topTracksData => {
+                            .then(data => {
                               // Handle the top tracks results here
-                              console.log('Top Tracks:', topTracksData.tracks);
-                              displaySongs(topTracksData.tracks);
+                              topTracksData= data.toptracks;
+                              console.log('toptracksdata:', topTracksData);
+                              displaySongs(data.toptracks);
                             })
                             .catch(error => console.error('Error fetching top tracks:', error));
                       } else {
@@ -215,13 +217,34 @@
 
         function displaySongs(songData){
           document.getElementById("playlist-container").innerHTML = ``;
-          for(i in songData){
-            var song = songData[i];
-            addSong(song);
+          var albumName;
+
+          if(songData.track.length >0){
+            for(i in songData.track){
+              var song = songData.track[i];
+
+              const topTracksUrl = `https://api.spotify.com/v1/search?q=track:"${song.name}" artist:"${artistName}"&type=track`; 
+              const topTracksRequestParams = {
+                method: 'GET',
+                headers: {
+                  'Authorization': `Bearer ${accessToken}`
+                }
+              };
+
+              // Make the request to get the top tracks
+              fetch(topTracksUrl, topTracksRequestParams)
+                .then(response => response.json())
+                .then(data => {
+                  // Handle the top tracks results here
+                  addSong(data.tracks.items[0]);
+                })
+                .catch(error => console.error('Error fetching top tracks:', error));
+            }
           }
+
         }
 
-        function addSong(song){
+        function addSong(song, album){
           document.getElementById("playlist-container").innerHTML += `<div class="list-group" style="max-height: 600px; overflow-y: auto;">
                             <div class="list-group-item list-group-item-action playlist-entry">
                                 <div class="cover-container">
@@ -288,7 +311,7 @@
             document.getElementById("playlist-container").innerHTML=``;
 
             //make request to get songs
-            const topTracksUrl = `https://api.spotify.com/v1/artists/${artistId}/top-tracks?country=US&limit=20`; // Change the country code as needed
+            const topTracksUrl = `http://ws.audioscrobbler.com/2.0/?method=artist.gettoptracks&artist=${artistName}&api_key=${lastfmKEY}&format=json`; // Change the country code as needed
             const topTracksRequestParams = {
               method: 'GET',
               headers: {
