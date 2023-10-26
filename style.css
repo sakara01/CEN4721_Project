@@ -243,10 +243,11 @@ li {
     width: 100%;
   } 
 
-  .search-btn{
-    left: 160px;
+  #sidebar-buttons{
+    left: 200px;
     bottom: 40px;
     position: absolute;
+    width:max-content;
   }
 
   .song{

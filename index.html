@@ -50,8 +50,9 @@
                   <button id="Empowering" class="btn oval-button" style="background-color: #65b850" onclick="tagClicked(id)">#Empowering</button>
                   
             </div>
-            <div>
+            <div id="sidebar-buttons">
               <button class="btn btn-secondary btn-lg search-btn" onclick="searchClicked()">Search</button>
+              <button class="btn btn-secondary btn-lg clear-btn" onclick="clearClicked()">Clear</button>
             </div>
           </div>
           <div id="sidebar-overlay">
@@ -158,7 +159,12 @@
           if (event.key === "Enter") {
               // Get the value from the search input
               artist = this.value;
-              console.log("Search term:", artist);
+                enterHit();
+                }
+        });
+
+        function enterHit(){
+          console.log("Search term:", artist);
               const searchUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(artist)}&type=artist`;
 
               // Set up the request to search for the artist
@@ -201,8 +207,8 @@
                       }
                   })
                   .catch(error => console.error('Error:', error));
-                }
-        });
+        }
+        
 
         function displaySongs(songData){
           document.getElementById("playlist-container").innerHTML = ``;
@@ -419,6 +425,21 @@
             document.getElementById("sidebar-overlay").style.visibility = 'hidden';
             toggleBool = false;
           }
+        }
+
+        function clearClicked(){
+          genres ='';
+          document.getElementById("Joyful").style.border = 'none';
+          document.getElementById("Energetic").style.border = '0px solid black';
+          document.getElementById("Melancholic").style.border = '0px solid black';
+          document.getElementById("Angry").style.border = '0px solid black';
+          document.getElementById("Romantic").style.border = '0px solid black';
+          document.getElementById("Relaxing").style.border = '0px solid black';
+          document.getElementById("Euphoric").style.border = '0px solid black';
+          document.getElementById("Mysterious").style.border = '0px solid black';
+          document.getElementById("Playful").style.border = '0px solid black';
+          document.getElementById("Empowering").style.border = '0px solid black';
+          enterHit();
         }
 
 
