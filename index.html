@@ -54,6 +54,8 @@
               <button class="btn btn-secondary btn-lg search-btn" onclick="searchClicked()">Search</button>
             </div>
           </div>
+          <div id="sidebar-overlay">
+          </div>
           <div id="main">
             <div id="main-header">
               Search
@@ -106,6 +108,9 @@
         document.getElementById("main2").style.height = window.innerHeight - 90 + 'px';
         document.getElementById("playlist-container").style.height = (window.innerHeight - 280) + 'px';
         document.getElementById("playlist2-container").style.height = (window.innerHeight - 200) + 'px';
+        document.getElementById("sidebar-overlay").style.height = (window.innerHeight - 90) + 'px';
+        document.getElementById("sidebar-overlay").style.width = 0.2*window.innerWidth +'px';
+
 
         document.getElementById("clearSearch").addEventListener("click", function() {
           document.getElementById("searchInput").value = ""; // Clear the input field
@@ -404,12 +409,14 @@
             document.getElementById("main").style.zIndex = 0;
             document.getElementById("main2").style.zIndex = 1;
             document.getElementById("toggleNavbar").textContent = "Add More Songs";
+            document.getElementById("sidebar-overlay").style.visibility = 'visible';
             toggleBool = true;
           }
           else{
             document.getElementById("main").style.zIndex = 1;
             document.getElementById("main2").style.zIndex = 0;
             document.getElementById("toggleNavbar").textContent = "View My Playlist";
+            document.getElementById("sidebar-overlay").style.visibility = 'hidden';
             toggleBool = false;
           }
         }
