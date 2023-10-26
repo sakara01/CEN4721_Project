@@ -244,9 +244,9 @@ li {
   } 
 
   #sidebar-buttons{
-    left: 200px;
-    bottom: 40px;
-    position: absolute;
+    margin:auto;
+    margin-top: 20px;
+    margin-bottom: 40px;
     width:max-content;
   }
 
