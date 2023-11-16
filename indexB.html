@@ -1,0 +1,461 @@
+
+<!DOCTYPE html>
+
+<html lang='en'>
+    <head>
+        <meta charset="UTF-8">
+        <title>CEN4721_Project_B</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </head>
+    <body> 
+        <div id="grid-container" class="grid-container">
+            <div class="grid-top">
+                <div class="title-navbar">
+                  <div class="title">Harmony Stream</div>
+                </div>
+                <div class="navbar">
+                  <button id="toggleNavbar" onclick="displayUser()">View My playlist</button>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="main-screen">
+          <div id="sidebar"> 
+            <div id="sidebar-header">
+              Sort By
+            </div>
+            <div id="tag-option-list">
+                  <button id="Joyful" class="btn oval-button" style="background-color: #edbf36" onclick="tagClicked(id)">#Joyful</button>
+                  <br>
+                  <button id="Energetic" class="btn oval-button" style="background-color: #3698ed" onclick="tagClicked(id)">#Energetic</button>
+                  <br>
+                  <button id="Melancholic" class="btn oval-button" style="background-color: #c4614b" onclick="tagClicked(id)">#Melancholic</button>
+                  <br>
+                  <button id="Angry" class="btn oval-button" style="background-color: #65b850" onclick="tagClicked(id)">#Angry</button>
+                  <br>
+                  <button id="Romantic" class="btn oval-button" style="background-color: #e464a9" onclick="tagClicked(id)">#Romantic</button>
+                  <br>
+                  <button id="Relaxing" class="btn oval-button" style="background-color: #4bc4aa" onclick="tagClicked(id)">#Relaxing</button>
+                  <br>
+                  <button id="Euphoric" class="btn oval-button" style="background-color: #3698ed" onclick="tagClicked(id)">#Euphoric</button>
+                  <br>
+                  <button id="Mysterious" class="btn oval-button" style="background-color: #c4614b" onclick="tagClicked(id)">#Mysterious</button>
+                  <br>
+                  <button id="Playful" class="btn oval-button" style="background-color: #65b850" onclick="tagClicked(id)">#Playful</button>
+                  <br>
+                  <button id="Empowering" class="btn oval-button" style="background-color: #65b850" onclick="tagClicked(id)">#Empowering</button>
+                  
+           
+            <div id="sidebar-buttons">
+              <button class="btn btn-secondary btn-lg search-btn" onclick="searchClicked()">Search</button>
+              <button class="btn btn-secondary btn-lg clear-btn" onclick="clearClicked()">Clear</button>
+            </div>
+          </div>
+          </div>
+          <div id="sidebar-overlay">
+          </div>
+          <div id="main">
+            <div id="main-header">
+              Search
+            </div>
+            <div class="input-group mb-3 searchbar">
+              <input type="text" class="form-control" id="searchInput" placeholder="Artist's Name" aria-label="Search term" aria-describedby="basic-addon2">
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" id="clearSearch">X</button>
+              </div>
+              <div class="spinner-border" id="spinner" role="status">
+                <span class="visually-hidden"></span>
+              </div>
+            </div>
+            <div class="container-container">      
+              <div id="notfound" class="found-or-not-container">
+                <img src="no-results.png" class="found-or-not-img">
+              </div>
+              <div id="search" class="found-or-not-container">
+                <img src="search.png" class="found-or-not-img">
+              </div>
+            </div>
+
+            <div id="playlist-container">   
+            </div>
+            
+          </div>
+          <div id="main2">
+              <div id="main2-header">
+                My Playlist
+              </div>
+              <div id="playlist2-container">   
+              </div>
+          </div>
+        </div>
+        
+    </body>
+    <script>
+
+        var genres ='';
+        var artist;
+        var artistName;
+        var artistId;
+        var topTracksData;
+        var toggleBool = false;
+
+        document.getElementById("searchInput").value = "";  //clear search bar on load
+        
+        document.getElementById("main-screen").style.height = window.innerHeight - 90 + 'px';
+        document.getElementById("main").style.height = window.innerHeight - 90 + 'px';
+        document.getElementById("main2").style.height = window.innerHeight - 90 + 'px';
+        document.getElementById("playlist-container").style.height = (window.innerHeight - 280) + 'px';
+        document.getElementById("playlist2-container").style.height = (window.innerHeight - 200) + 'px';
+        document.getElementById("sidebar-overlay").style.height = (window.innerHeight - 90) + 'px';
+        document.getElementById("sidebar-overlay").style.width = 0.2*window.innerWidth +'px';
+
+
+        document.getElementById("clearSearch").addEventListener("click", function() {
+          document.getElementById("searchInput").value = ""; // Clear the input field
+        });
+
+        
+        const CLIENT_ID = 'fb2c7009a8f4407ca01b0da46c45750a';
+        const CLIENT_SECRET = 'af63502a913d49a3ab20b95681a42fdf';
+        var accessToken;
+
+        // Encode your client ID and client secret
+        const credentials = btoa(`${CLIENT_ID}:${CLIENT_SECRET}`);
+
+        // Define the token request URL
+        const tokenUrl = 'https://accounts.spotify.com/api/token';
+
+        // Set up the token request parameters
+        const tokenRequestParams = {
+            method: 'POST',
+            headers: {
+                'Authorization': `Basic ${credentials}`,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'grant_type=client_credentials'
+        };
+
+        // Make the request to obtain the access token
+        fetch(tokenUrl, tokenRequestParams)
+            .then(response => response.json())
+            .then(data => {
+                accessToken = data.access_token;
+                // You can now use this access token to make requests to the Spotify API
+                console.log('Access Token:', accessToken);
+            })
+            .catch(error => console.error('Error:', error));
+
+
+
+        const lastfmKEY= '4eb3fe2b8c857843a5f02285f350c541';
+        const lastfmSECRET= 'cf4c824d370be3ad4674798b74d335f8';
+
+        
+
+        document.getElementById("searchInput").addEventListener("keyup", function(event) {
+          if (event.key === "Enter") {
+              // Get the value from the search input
+              artist = this.value;
+              clearClicked();
+          }
+        });
+
+        function enterHit(){
+          console.log("Search term:", artist);
+              const searchUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(artist)}&type=artist`;
+
+              // Set up the request to search for the artist
+              const artistSearchRequestParams = {
+                  method: 'GET',
+                  headers: {
+                      'Authorization': `Bearer ${accessToken}`
+                  }
+                };
+                // Make the request to search for the artist
+              fetch(searchUrl, artistSearchRequestParams)
+                  .then(response => response.json())
+                  .then(data => {
+                      // Handle the search results here
+                      console.log('Artist Search Results:', data);
+                      if (data.artists && data.artists.items.length > 0) {
+                          artistName = data.artists.items[0].name;
+                          artistId = data.artists.items[0].id; // SPOTIFY artist ID
+
+                          // Request the top tracks of the artist
+                          const topTracksUrl = `http://ws.audioscrobbler.com/2.0/?method=artist.gettoptracks&artist=${artistName}&api_key=${lastfmKEY}&format=json`; 
+
+                          // Make the request to get the top tracks
+                          fetch(topTracksUrl)
+                            .then(response => response.json())
+                            .then(data => {
+                              // Handle the top tracks results here
+                              topTracksData = data.toptracks.track;
+                              displaySongs(topTracksData);
+                            })
+                            .catch(error => console.error('Error fetching top tracks:', error));
+
+                            document.getElementById("search").style.visibility = 'hidden';
+
+                      } else {
+                        console.log('No artist found with the given search term.');
+                        document.getElementById("playlist-container").innerHTML = ``;
+                        document.getElementById("search").style.visibility = 'hidden';
+                        document.getElementById("notfound").style.visibility = 'visible';
+                      }
+                  })
+                  .catch(error => console.error('Error:', error));
+        }
+        
+
+        function displaySongs(songData){
+          document.getElementById("playlist-container").innerHTML = ``;
+
+          if(songData.length >0){
+            for(i in songData){
+              var song = songData[i];
+
+              const topTracksUrl = `https://api.spotify.com/v1/search?q=track:"${song.name}" artist:"${artistName}"&type=track`; 
+              const topTracksRequestParams = {
+                method: 'GET',
+                headers: {
+                  'Authorization': `Bearer ${accessToken}`
+                }
+              };
+
+              // Make the request to get the track
+              fetch(topTracksUrl, topTracksRequestParams)
+                .then(response => response.json())
+                .then(data => {
+                  if(data.tracks.items[0]){
+                    addSong(data.tracks.items[0]);
+                  }
+                  
+                })
+                .catch(error => console.error('Error fetching top tracks:', error));
+            }
+          }
+
+        }
+
+        function addSong(song){
+          document.getElementById("playlist-container").innerHTML += `<div class="list-group" style="max-height: 600px; overflow-y: auto;">
+                            <div class="list-group-item list-group-item-action playlist-entry">
+                                <div class="cover-container">
+                                <img src="musicnote.png" class="cover-img" alt="add to playlist button">
+                                </div>
+                                <div class="playlist-entry-text1">
+                                  <p class="mb-1 song">${song.name}</p>
+                                  <p class="mb-1 artist">${song.artists[0].name}</p>
+                                </div>
+                                <div class="playlist-entry-text2">
+                                  <p class="mb-1 album">${song.album.name}</p>
+                                </div>
+                                <div class="img-container">
+                                  <button style="background-color: white; border: none;" onclick="userAddSong('${song.name}','${song.artists[0].name}')">
+                                    <img src="plus.png" class="add-btn" alt="add to playlist button">
+                                  </button>
+                                </div>
+                        </div>`;
+        }
+         
+
+        function tagClicked(id){
+          console.log(id);
+          document.getElementById(id).style.border = '4px solid black';
+          switch(id){
+            case "Joyful":
+              console.log("switchcase");
+              genres += "Pop, Ska, Reggae, Funk, Disco, electro pop, pop rock";
+              break;
+            case "Energetic":
+              genres += "Rock, Electronic (EDM, Techno), Punk, Hip-Hop, Reggaeton, dance, electro pop, electropop, rap, afrobeat, pop rock";
+              break;
+            case "Melancholic":
+              genres += "Blues, Classical (Adagios), Country (Country Ballads), Folk (Sad Folk), Jazz (Bluesy Jazz), indie, rnb, alternative";
+              break;
+            case "Angry":
+              genres += "Metal (Thrash, Death, Black), Hardcore Punk, Grunge, Rap (Gangsta Rap), Industrial, hip hop, brat, trap";
+              break;
+            case "Romantic":
+              genres +=  "RnB,R&B Soul, Ballads, Reggae (Love Songs), Country (Country Love), indie";
+              break;
+            case "Relaxing":
+              genres += "Ambient, Downtempo, Jazz (Smooth Jazz), Electronic (Chillout, Chillwave), New Age, dream, indie, alternative";
+              break;
+            case "Euphoric":
+              genres +=  "Trance, Psychedelic, House, Psytrance, EDM, electro pop";
+              break;
+            case "Mysterious":
+              genres += "Trip-Hop, Experimental, Darkwave, Industrial, Post-Rock, dark pop, alternative";
+              break;
+            case "Playful":
+              genres +=  "Folk (Folk Revival), Children's Music, Novelty, J-Pop/K-Pop, Ska";
+              break;
+            case "Empowering":
+              genres += "Hip-Hop (Empowerment), Rock (Classic Rock, Hard Rock), Pop (Upbeat), Reggae (Roots Reggae), Funk (Funky grooves), indie, trap, brat, hip hop, rap, afrobeat, pop rock";
+              break;
+          }
+        }
+
+        var indexesToRemove=[];
+
+        async function searchClicked(){
+          if (artist== undefined){
+            alert("Please select artist");
+            //possibly searach by genre without artist
+          }
+          else{
+            document.getElementById("playlist-container").innerHTML=``;
+            console.log(`genres are: ${genres}`);
+          
+            for(i in topTracksData){
+              document.getElementById("spinner").style.visibility = 'visible';
+              await checktags(topTracksData[i],i);
+            }
+            document.getElementById("spinner").style.visibility = 'hidden';
+            if (document.getElementById("playlist-container").innerHTML == ``){
+              document.getElementById("notfound").style.visibility = 'visible';
+            }
+          }
+        }
+
+        async function checktags(song,i){
+            //if tag matches genres, do addSong
+            const genreURL = `http://ws.audioscrobbler.com/2.0/?method=track.gettoptags&artist=${artistName}&track=${song.name}&api_key=${lastfmKEY}&format=json`;
+
+              // Make the request to search for the artist
+            await fetch(genreURL)
+                .then(response => response.json())
+                .then(data => {
+                  genresLower=genres.toLowerCase();
+                  if(data.toptags){
+                    if (data.toptags.tag[0] !=null) {
+                      tag0Lower=data.toptags.tag[0].name.toLowerCase();
+                    }
+                    if (data.toptags.tag[1] !=null){
+                      tag1Lower=data.toptags.tag[1].name.toLowerCase()
+                      console.log(song.name)
+                      console.log(`tags:${tag0Lower},${tag1Lower}`) //delete
+
+                      if (genresLower.includes(tag0Lower) || genresLower.includes(tag1Lower)){
+                        const topTracksUrl = `https://api.spotify.com/v1/search?q=track:"${song.name}" artist:"${artistName}"&type=track`; 
+                        const topTracksRequestParams = {
+                          method: 'GET',
+                          headers: {
+                            'Authorization': `Bearer ${accessToken}`
+                          }
+                        };
+
+                        // Make the request to get the track
+                        fetch(topTracksUrl, topTracksRequestParams)
+                          .then(response => response.json())
+                          .then(data => {
+                            if(data.tracks.items[0]){
+                              addSong(data.tracks.items[0]);
+                            }
+                            
+                          })
+                          .catch(error => console.error('Error fetching top tracks:', error));
+                      
+                      }
+                      
+                    }
+                  }
+                  
+                });
+        }
+
+        function userAddSong(songname, artistname){
+          //var song = JSON.parse(songStr);
+          console.log("here is the song:",songname, artistname);
+          
+          const topTracksUrl = `https://api.spotify.com/v1/search?q=track:"${songname}" artist:"${artistname}"&type=track`; 
+          const topTracksRequestParams = {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${accessToken}`
+            }
+          };
+
+          // Make the request to get the track
+          fetch(topTracksUrl, topTracksRequestParams)
+            .then(response => response.json())
+            .then(data => {
+              if(data.tracks.items[0]){
+                addSong2(data.tracks.items[0]);
+              }
+              
+            })
+            .catch(error => console.error('Error fetching top tracks:', error));
+            
+        }
+
+        function addSong2(song){
+          document.getElementById("playlist2-container").innerHTML += `<div class="list-group" style="max-height: 600px; overflow-y: auto;">
+                            <div class="list-group-item list-group-item-action playlist-entry">
+                                <div class="cover-container">
+                                <img src="musicnote.png" class="cover-img" alt="add to playlist button">
+                                </div>
+                                <div class="playlist-entry-text1">
+                                  <p class="mb-1 song">${song.name}</p>
+                                  <p class="mb-1 artist">${song.artists[0].name}</p>
+                                </div>
+                                <div class="playlist-entry-text2">
+                                  <p class="mb-1 album">${song.album.name}</p>
+                                </div>
+                                
+                        </div>`;
+        }
+
+        function displayUser(){
+          if (toggleBool == false){
+            document.getElementById("main").style.zIndex = 0;
+            document.getElementById("main2").style.zIndex = 1;
+            document.getElementById("toggleNavbar").textContent = "Add More Songs";
+            document.getElementById("sidebar-overlay").style.visibility = 'visible';
+            toggleBool = true;
+          }
+          else{
+            document.getElementById("main").style.zIndex = 1;
+            document.getElementById("main2").style.zIndex = 0;
+            document.getElementById("toggleNavbar").textContent = "View My Playlist";
+            document.getElementById("sidebar-overlay").style.visibility = 'hidden';
+            toggleBool = false;
+          }
+        }
+
+        function clearClicked(){
+          genres ='';
+          document.getElementById("Joyful").style.border = 'none';
+          document.getElementById("Energetic").style.border = '0px solid black';
+          document.getElementById("Melancholic").style.border = '0px solid black';
+          document.getElementById("Angry").style.border = '0px solid black';
+          document.getElementById("Romantic").style.border = '0px solid black';
+          document.getElementById("Relaxing").style.border = '0px solid black';
+          document.getElementById("Euphoric").style.border = '0px solid black';
+          document.getElementById("Mysterious").style.border = '0px solid black';
+          document.getElementById("Playful").style.border = '0px solid black';
+          document.getElementById("Empowering").style.border = '0px solid black';
+          enterHit();
+        }
+
+
+    </script>
+</html>
+
+
+
+<!--credits:
+music icon : https://www.vecteezy.com/png/1200758-music-note
+no results icon: https://www.flaticon.com/free-icon/no-results_6179016
+
+-->
+
+
+
+
+
