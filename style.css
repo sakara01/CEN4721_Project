@@ -97,14 +97,12 @@ li {
   }
   
   .navbar {
-    display: inline-block;
     position: relative;
     font-style: normal;
-    text-align: right; /* 导航栏内容右对齐 */
   }
   
   #toggleNavbar {
-    font-size: 2em;
+    font-size: 20px;
     padding: 12px 32px;
     margin: 0;
     align-self: flex-end; /* 将按钮移动到右侧 */
@@ -158,14 +156,15 @@ li {
     height:30px;
     width:max-content;
     font-size: 30px;
-    margin: 40px;
+    margin: 30px;
+    margin-bottom: 20px;
   }
 
   #main-header{
     height:30px;
     width:70%;
     font-size: 30px;
-    padding: 40px;
+    margin: 30px;
   }
 
   #main2-header{
@@ -244,9 +243,9 @@ li {
   } 
 
   #sidebar-buttons{
-    margin:auto;
-    margin-top: 20px;
-    margin-bottom: 40px;
+    position: absolute;
+    bottom: 20px;
+    left:20px;
     width:max-content;
   }
 
@@ -291,4 +290,27 @@ li {
     animation-duration: 1.2s !important;
     margin-left:10px;
     visibility: hidden;
+  }
+
+  #slider-holder{
+    height:400px;
+    display: flex;
+    align-items: center;
+    margin-top:10px !important;
+  }
+
+  .vertical-slider {
+    margin-top: 20px;
+    transform: rotate(270deg);
+    width: 100px;  
+  }
+
+  #added-tags{
+    margin-left: 20px;
+    margin-top: 20px;
+    font-size: 20px;
+  }
+  
+  .designBtags{
+    margin-bottom:10px !important;
   }

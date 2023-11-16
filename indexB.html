@@ -9,6 +9,7 @@
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/rangeslider.js/2.3.2/rangeslider.css" />
     </head>
     <body> 
         <div id="grid-container" class="grid-container">
@@ -29,30 +30,33 @@
               Sort By
             </div>
             <div id="tag-option-list">
-                  <button id="Joyful" class="btn oval-button" style="background-color: #edbf36" onclick="tagClicked(id)">#Joyful</button>
-                  <br>
-                  <button id="Energetic" class="btn oval-button" style="background-color: #3698ed" onclick="tagClicked(id)">#Energetic</button>
-                  <br>
-                  <button id="Melancholic" class="btn oval-button" style="background-color: #c4614b" onclick="tagClicked(id)">#Melancholic</button>
-                  <br>
-                  <button id="Angry" class="btn oval-button" style="background-color: #65b850" onclick="tagClicked(id)">#Angry</button>
-                  <br>
-                  <button id="Romantic" class="btn oval-button" style="background-color: #e464a9" onclick="tagClicked(id)">#Romantic</button>
-                  <br>
-                  <button id="Relaxing" class="btn oval-button" style="background-color: #4bc4aa" onclick="tagClicked(id)">#Relaxing</button>
-                  <br>
-                  <button id="Euphoric" class="btn oval-button" style="background-color: #3698ed" onclick="tagClicked(id)">#Euphoric</button>
-                  <br>
-                  <button id="Mysterious" class="btn oval-button" style="background-color: #c4614b" onclick="tagClicked(id)">#Mysterious</button>
-                  <br>
-                  <button id="Playful" class="btn oval-button" style="background-color: #65b850" onclick="tagClicked(id)">#Playful</button>
-                  <br>
-                  <button id="Empowering" class="btn oval-button" style="background-color: #65b850" onclick="tagClicked(id)">#Empowering</button>
-                  
-           
+              <div class="container mt-5" id="slider-holder">
+                <div class="form-group">
+                  <input type="range" class="custom-range vertical-slider" id="moodSlider" min="1" max="10" step="1" value="3">
+                  <span id="moodValue"></span>
+                </div>
+              </div> 
+            </div>
+            <div id="added-tags">
+              <p>Added Tags:</p>
+              <button id="Joyful" class="btn oval-button designBtags" style="background-color: #edbf36" >#Joyful</button>
+              <!--
+              <button id="Energetic" class="btn oval-button designBtags" style="background-color: #3698ed" >#Energetic</button>
+              <button id="Melancholic" class="btn oval-button designBtags" style="background-color: #c4614b" >#Melancholic</button>
+              <button id="Angry" class="btn oval-button designBtags" style="background-color: #65b850" >#Angry</button>
+              <button id="Romantic" class="btn oval-button designBtags" style="background-color: #e464a9" >#Romantic</button>
+              <button id="Relaxing" class="btn oval-button designBtags" style="background-color: #4bc4aa" >#Relaxing</button>
+              <button id="Euphoric" class="btn oval-button designBtags" style="background-color: #3698ed" >#Euphoric</button>
+              <button id="Mysterious" class="btn oval-button designBtags" style="background-color: #c4614b" >#Mysterious</button>
+              <button id="Playful" class="btn oval-button designBtags" style="background-color: #65b850" >#Playful</button>
+              <button id="Empowering" class="btn oval-button designBtags" style="background-color: #b8ae50" >#Empowering</button>
+              -->
+            </div>
+            <div style="height:100px">
+            </div>
             <div id="sidebar-buttons">
-              <button class="btn btn-secondary btn-lg search-btn" onclick="searchClicked()">Search</button>
-              <button class="btn btn-secondary btn-lg clear-btn" onclick="clearClicked()">Clear</button>
+              <button class="btn btn-primary btn-lg shadow search-btn" style="width:100px;" onclick="searchClicked()">Search</button>
+              <button class="btn btn-primary btn-lg shadow clear-btn" style="width:100px;" onclick="clearClicked()">Clear</button>
             </div>
           </div>
           </div>
@@ -94,6 +98,8 @@
         </div>
         
     </body>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rangeslider.js/2.3.2/rangeslider.min.js"></script>
     <script>
 
         var genres ='';
@@ -112,6 +118,8 @@
         document.getElementById("playlist2-container").style.height = (window.innerHeight - 200) + 'px';
         document.getElementById("sidebar-overlay").style.height = (window.innerHeight - 90) + 'px';
         document.getElementById("sidebar-overlay").style.width = 0.2*window.innerWidth +'px';
+        document.getElementById("slider-holder").style.height = 0.3*window.innerHeight +'px';
+        document.getElementById("moodSlider").style.width = 0.3*window.innerHeight +'px';
 
 
         document.getElementById("clearSearch").addEventListener("click", function() {
