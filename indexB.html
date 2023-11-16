@@ -33,24 +33,12 @@
               <div class="container mt-5" id="slider-holder">
                 <div class="form-group">
                   <input type="range" class="custom-range vertical-slider" id="moodSlider" min="1" max="10" step="1" value="3">
-                  <span id="moodValue"></span>
+                  <button class="btn btn-primary shadow" id="moodValue" onclick="tagClicked(emotionData.emotion)"></button>
                 </div>
               </div> 
             </div>
             <div id="added-tags">
               <p>Added Tags:</p>
-              <button id="Joyful" class="btn oval-button designBtags" style="background-color: #edbf36" >#Joyful</button>
-              <!--
-              <button id="Energetic" class="btn oval-button designBtags" style="background-color: #3698ed" >#Energetic</button>
-              <button id="Melancholic" class="btn oval-button designBtags" style="background-color: #c4614b" >#Melancholic</button>
-              <button id="Angry" class="btn oval-button designBtags" style="background-color: #65b850" >#Angry</button>
-              <button id="Romantic" class="btn oval-button designBtags" style="background-color: #e464a9" >#Romantic</button>
-              <button id="Relaxing" class="btn oval-button designBtags" style="background-color: #4bc4aa" >#Relaxing</button>
-              <button id="Euphoric" class="btn oval-button designBtags" style="background-color: #3698ed" >#Euphoric</button>
-              <button id="Mysterious" class="btn oval-button designBtags" style="background-color: #c4614b" >#Mysterious</button>
-              <button id="Playful" class="btn oval-button designBtags" style="background-color: #65b850" >#Playful</button>
-              <button id="Empowering" class="btn oval-button designBtags" style="background-color: #b8ae50" >#Empowering</button>
-              -->
             </div>
             <div style="height:100px">
             </div>
@@ -124,6 +112,14 @@
 
         document.getElementById("clearSearch").addEventListener("click", function() {
           document.getElementById("searchInput").value = ""; // Clear the input field
+        });
+
+        var moodSlider = $('#moodSlider').rangeslider();
+
+        updateMoodValue(moodSlider.val());
+
+        moodSlider.on('input', function() {
+          updateMoodValue($(this).val());
         });
 
         
@@ -273,10 +269,8 @@
 
         function tagClicked(id){
           console.log(id);
-          document.getElementById(id).style.border = '4px solid black';
           switch(id){
             case "Joyful":
-              console.log("switchcase");
               genres += "Pop, Ska, Reggae, Funk, Disco, electro pop, pop rock";
               break;
             case "Energetic":
@@ -307,6 +301,7 @@
               genres += "Hip-Hop (Empowerment), Rock (Classic Rock, Hard Rock), Pop (Upbeat), Reggae (Roots Reggae), Funk (Funky grooves), indie, trap, brat, hip hop, rap, afrobeat, pop rock";
               break;
           }
+          document.getElementById("added-tags").innerHTML+=`<button id="${emotionData.emotion}" class="btn oval-button designBtags" style="background-color: ${emotionData.color}" >#${emotionData.emotion}</button>`;
         }
 
         var indexesToRemove=[];
@@ -438,17 +433,34 @@
 
         function clearClicked(){
           genres ='';
-          document.getElementById("Joyful").style.border = 'none';
-          document.getElementById("Energetic").style.border = '0px solid black';
-          document.getElementById("Melancholic").style.border = '0px solid black';
-          document.getElementById("Angry").style.border = '0px solid black';
-          document.getElementById("Romantic").style.border = '0px solid black';
-          document.getElementById("Relaxing").style.border = '0px solid black';
-          document.getElementById("Euphoric").style.border = '0px solid black';
-          document.getElementById("Mysterious").style.border = '0px solid black';
-          document.getElementById("Playful").style.border = '0px solid black';
-          document.getElementById("Empowering").style.border = '0px solid black';
+          document.getElementById("added-tags").innerHTML = `<p>Added Tags:</p>`;
           enterHit();
+        }
+
+        var emotionData;
+
+        function updateMoodValue(value) {
+          var moodValueBtn = $('#moodValue');
+          var moodText = '';
+
+          var colorMap = {
+            1: { emotion: 'Joyful', color: '#edbf36' },
+            2: { emotion: 'Energetic', color: '#3698ed' },
+            3: { emotion: 'Melancholic', color: '#c4614b' },
+            4: { emotion: 'Angry', color: '#65b850' },
+            5: { emotion: 'Romantic', color: '#e464a9' },
+            6: { emotion: 'Relaxing', color: '#4bc4aa' },
+            7: { emotion: 'Euphoric', color: '#3698ed' },
+            8: { emotion: 'Mysterious', color: '#c4614b' },
+            9: { emotion: 'Playful', color: '#65b850' },
+            10: { emotion: 'Empowering', color: '#b8ae50' },
+          };
+
+          emotionData = colorMap[value] || { emotion: 'Unknown', color: '#808080' };
+          var color = emotionData.color;
+
+          // Set the button text and color
+          moodValueBtn.text('Add ' + emotionData.emotion).css('background-color', color);
         }
 
 

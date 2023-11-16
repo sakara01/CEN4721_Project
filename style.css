@@ -300,17 +300,24 @@ li {
   }
 
   .vertical-slider {
-    margin-top: 20px;
-    transform: rotate(270deg);
+    margin-top: 80px;
+    margin-left: -50px;
+    transform: rotate(-270deg);
     width: 100px;  
   }
 
   #added-tags{
     margin-left: 20px;
-    margin-top: 20px;
+    margin-top: 30px;
     font-size: 20px;
   }
   
   .designBtags{
     margin-bottom:10px !important;
+  }
+
+  #moodValue{
+    width:148px;
+    margin-left: 65px;
+    margin-top: -25px;
   }
